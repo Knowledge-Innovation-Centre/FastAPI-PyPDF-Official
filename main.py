@@ -69,7 +69,7 @@ async def create_pdf(request: Request):
     smtp_server.sendmail("2020822438@student.uitm.edu.my", obj["user_email"], msg.as_string())
     smtp_server.quit()
 
-    return {"message": "Email sent!"}
+    return {"message": f"Email Sent to {obj['user_email']}"}
 
 
     # return {"user_email": obj["user_email"],
