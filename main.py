@@ -48,6 +48,11 @@ async def create_pdf(request: Request):
     msg["Subject"] = "Timesheets"
 
 
+    # Add message body
+    body = "This is the message body"
+    msg.attach(MIMEText(body))
+
+
     # Attach the file
     pdf = PDF()
     pdf.add_page()
