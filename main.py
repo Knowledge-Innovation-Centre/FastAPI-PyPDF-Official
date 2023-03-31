@@ -84,6 +84,14 @@ async def create_pdf(request: Request):
         )
 
 
+        # Fifth Table
+        fifth_table = (
+            ("Name of the Employer", ""),
+            ("Date", ""),
+            ("Signature of Employer", "")
+        )
+
+
         #########################
         # Create the message
         msg = MIMEMultipart()
@@ -144,6 +152,7 @@ async def create_pdf(request: Request):
         if pdf.will_page_break(15):
             pdf.add_page()
         
+        
         pdf.set_font("times", "", 12)
         with pdf.table(text_align=("CENTER", "CENTER"), cell_fill_mode="NONE", first_row_as_headings=False, cell_fill_color=grey) as table:
             for data_row in third_table:
@@ -159,9 +168,11 @@ async def create_pdf(request: Request):
 
                     row.cell(datum)
 
+
         if pdf.will_page_break(71):
             pdf.add_page()
         
+
         pdf.set_font("times", "", 12)
         # pdf.add_page()
         pdf.ln(10)
@@ -174,6 +185,26 @@ async def create_pdf(request: Request):
                     if index == 0:
                         pdf.set_font("times", "B", 12)
                         index += 1
+
+                    row.cell(datum)
+
+
+        if pdf.will_page_break(71):
+            pdf.add_page()
+            
+            
+        pdf.set_font("times", "", 12)
+        # pdf.add_page()
+        pdf.ln(10)
+        with pdf.table(text_align=("LEFT", "CENTER"), cell_fill_mode="ROWS", first_row_as_headings=False, line_height=4 * pdf.font_size) as table:
+            for data_row in fifth_table:
+                row = table.row()
+                index = 0
+                for datum in data_row:
+                    pdf.set_font("times", "", 14)
+                    if index == 0:
+                    pdf.set_font("times", "B", 12)
+                    index += 1
 
                     row.cell(datum)
 
