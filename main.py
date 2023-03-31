@@ -196,6 +196,7 @@ async def create_pdf(request: Request):
         smtp_server.sendmail("MS_ieFZbk@knowledgeinnovation.eu", data["user_email"], msg.as_string())
         smtp_server.quit()
 
+
         return {"status": 200}
     except Exception:
         return {"status": 500}
