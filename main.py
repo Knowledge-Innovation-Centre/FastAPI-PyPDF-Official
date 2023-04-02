@@ -224,7 +224,7 @@ async def create_pdf(request: Request):
         smtp_server.starttls()
         # smtp_server.login("kamarul@knowledgeinnovation.eu", "gsb08Yy0Yq2B")
         smtp_server.login("MS_ieFZbk@knowledgeinnovation.eu", "lDgzXCJwGTV5FcRu")
-        smtp_server.sendmail("MS_ieFZbk@knowledgeinnovation.eu", data["user_email"], msg.as_string())
+        smtp_server.sendmail("MS_ieFZbk@knowledgeinnovation.eu", data["employer_email"], msg.as_string())
         smtp_server.quit()
 
 
