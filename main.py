@@ -96,13 +96,13 @@ async def create_pdf(request: Request):
         # Create the message
         msg = MIMEMultipart()
         msg["From"] = "support@knowledgeinnovation.eu"
-        msg["To"] = data["user_email"]
-        msg["Subject"] = f"Requested Timesheets Report by {data['user_name']} on {data['date']}"
+        msg["To"] = data["employer_email"]
+        msg["Subject"] = f"Requested Timesheets Report by {data['employer_name']} on {data['date']}"
 
 
         #########################
         # Add message body
-        body = f"Dear {data['user_name']},\n\nThis is a generated email. Per request, please see attached Timesheet Report in the PDF format for the signing process.\n\nIn case of any problems check the administrator in your organisation."
+        body = f"Dear {data['employer_name']},\n\nThis is a generated email. Per request, please see attached Timesheet Report in the PDF format for the signing process.\n\nIn case of any problems check the administrator in your organisation."
 
 
         # body = """Dear Receiver,
