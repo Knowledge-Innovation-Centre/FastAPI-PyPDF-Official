@@ -17,9 +17,13 @@ warnings.filterwarnings("ignore")
 from custom_class import PDF
 from fpdf.fonts import FontFace
 
+import environ
+
 
 app = FastAPI()
 
+env = environ.Env()
+environ.Env.read_env()
 
 @app.get("/")
 async def root():
@@ -95,7 +99,7 @@ async def create_pdf(request: Request):
         #########################
         # Create the message
         msg = MIMEMultipart()
-        msg["From"] = "support@knowledgeinnovation.eu"
+        msg["From"] = env("MSG_FROM_1")
         msg["To"] = data["employer_email"]
         msg["Subject"] = f"Requested Timesheets Report by {data['employer_name']} on {data['date']}"
 
@@ -169,14 +173,16 @@ async def create_pdf(request: Request):
                     row.cell(datum)
 
 
-        if pdf.will_page_break(71):
+        if pdf.will_page_break(57):
             pdf.add_page()
+        else:
+            pdf.ln(10)
         
 
         pdf.set_font("times", "", 12)
         # pdf.add_page()
-        pdf.ln(10)
-        with pdf.table(text_align=("LEFT", "CENTER"), cell_fill_mode="ROWS", first_row_as_headings=False, line_height=4 * pdf.font_size) as table:
+        # pdf.ln(10)
+        with pdf.table(text_align=("LEFT", "CENTER"), cell_fill_mode="ROWS", first_row_as_headings=False, line_height=3 * pdf.font_size) as table:
             for data_row in fourth_table:
                 row = table.row()
                 index = 0
@@ -189,14 +195,16 @@ async def create_pdf(request: Request):
                     row.cell(datum)
 
 
-        if pdf.will_page_break(71):
+        if pdf.will_page_break(57):
             pdf.add_page()
+        else:
+            pdf.ln(10)
             
 
         pdf.set_font("times", "", 12)
         # pdf.add_page()
-        pdf.ln(10)
-        with pdf.table(text_align=("LEFT", "CENTER"), cell_fill_mode="ROWS", first_row_as_headings=False, line_height=4 * pdf.font_size) as table:
+        # pdf.ln(10)
+        with pdf.table(text_align=("LEFT", "CENTER"), cell_fill_mode="ROWS", first_row_as_headings=False, line_height=3 * pdf.font_size) as table:
             for data_row in fifth_table:
                 row = table.row()
                 index = 0
@@ -219,28 +227,22 @@ async def create_pdf(request: Request):
 
         #########################
         # Send the message
-        # smtp_server = smtplib.SMTP("smtp.zoho.eu", 587)
-        smtp_server = smtplib.SMTP("smtp.mailersend.net", 587)
+        smtp_server = smtplib.SMTP(env("SMTP_SERVER_1"), 587)
         smtp_server.starttls()
-        # smtp_server.login("kamarul@knowledgeinnovation.eu", "gsb08Yy0Yq2B")
-        smtp_server.login("MS_ieFZbk@knowledgeinnovation.eu", "lDgzXCJwGTV5FcRu")
-        smtp_server.sendmail("MS_ieFZbk@knowledgeinnovation.eu", data["employer_email"], msg.as_string())
+        
+
+        smtp_server.login(env("SMTP_LOGIN_EMAIL_1"), env("SMTP_PASSWORD_1"))
+        smtp_server.sendmail(env("SMTP_LOGIN_EMAIL_1"), data["employer_email"], msg.as_string())
+
+
         smtp_server.quit()
 
 
         return {"status": 200}
+        # return {"message": f"Email Sent to {data['employer_email']}"}
     except Exception:
         return {"status": 500}
         # return {"message": f"Email Sent to {data['user_email']}"}
 
-
-
-
-@app.post("/predict")
-async def predict(request: Request):
-
-    obj = await request.json()
-    return {"message": "Data Received",
-            "data": obj["data"]}
 
 
