@@ -99,7 +99,7 @@ async def create_pdf(request: Request):
         #########################
         # Create the message
         msg = MIMEMultipart()
-        msg["From"] = env("MSG_FROM_1")
+        msg["From"] = env("MSG_FROM_0")
         msg["To"] = data["employer_email"]
         msg["Subject"] = f"Requested Timesheets Report by {data['employer_name']} on {data['date']}"
 
@@ -227,12 +227,12 @@ async def create_pdf(request: Request):
 
         #########################
         # Send the message
-        smtp_server = smtplib.SMTP(env("SMTP_SERVER_1"), 587)
+        smtp_server = smtplib.SMTP(env("SMTP_SERVER_0"), 587)
         smtp_server.starttls()
         
 
-        smtp_server.login(env("SMTP_LOGIN_EMAIL_1"), env("SMTP_PASSWORD_1"))
-        smtp_server.sendmail(env("SMTP_LOGIN_EMAIL_1"), data["employer_email"], msg.as_string())
+        smtp_server.login(env("SMTP_LOGIN_EMAIL_0"), env("SMTP_PASSWORD_0"))
+        smtp_server.sendmail(env("SMTP_LOGIN_EMAIL_0"), data["employer_email"], msg.as_string())
 
 
         smtp_server.quit()
