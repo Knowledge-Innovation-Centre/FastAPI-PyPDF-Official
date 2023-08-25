@@ -38,9 +38,10 @@ async def create_pdf(request: Request):
 
 
         # First Table
+        user_name_unicode = data["user_name"].encode("utf-8").decode("utf-8")
         first_table = (
             ("Organization:", data["organisation"]),
-            ("Name & Surname of Employee:", data["user_name"]),
+            ("Name & Surname of Employee:", user_name_unicode),
             ("Date & Time of Report:", data["date"])
         )
 
