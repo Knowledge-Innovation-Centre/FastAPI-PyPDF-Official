@@ -43,7 +43,7 @@ async def create_pdf(request: Request):
         # First Table
         first_table = (
             ("Organization:", data["organisation"]),
-            ("User Email:", data["user_name"]),
+            ("Username:", data["user_name"]),
             # ("Name & Surname of Employee:", data["user_name"]),
             ("Date & Time of Report:", data["date"])
         )
@@ -86,7 +86,7 @@ async def create_pdf(request: Request):
 
         # Fourth Table
         fourth_table = (
-            ("Email of the Employee", data["user_name"]),
+            ("Username of the Employee", data["user_name"]),
             # ("Name of the Employee", data["user_name"]),
             ("Date", ""),
             ("Signature of Employee", "")
