@@ -1,5 +1,4 @@
 from fastapi import FastAPI, Path, Query, Request, BackgroundTasks
-from fastapi.encoders import jsonable_encoder
 from typing import Optional
 from pydantic import BaseModel
 
@@ -16,15 +15,19 @@ import warnings
 warnings.filterwarnings("ignore")
 
 from custom_class import PDF
+
 from fpdf.fonts import FontFace
 
 import environ
+
+import traceback
 
 
 app = FastAPI()
 
 env = environ.Env()
 environ.Env.read_env()
+
 
 @app.get("/")
 async def root():
@@ -37,12 +40,11 @@ async def create_pdf(request: Request):
     try:
         data = await request.json()
 
-
         # First Table
-        json_compatible = jsonable_encoder(data)
         first_table = (
             ("Organization:", data["organisation"]),
-            ("Name & Surname of Employee:", json_compatible["user_name"]),
+            ("User Email:", data["user_name"]),
+            # ("Name & Surname of Employee:", data["user_name"]),
             ("Date & Time of Report:", data["date"])
         )
 
@@ -84,7 +86,8 @@ async def create_pdf(request: Request):
 
         # Fourth Table
         fourth_table = (
-            ("Name of the Employee", data["user_name"]),
+            ("Email of the Employee", data["user_name"]),
+            # ("Name of the Employee", data["user_name"]),
             ("Date", ""),
             ("Signature of Employee", "")
         )
@@ -124,22 +127,21 @@ async def create_pdf(request: Request):
         pdf = PDF()
         pdf.alias_nb_pages()
         pdf.set_auto_page_break(auto=True, margin=15)
-
         pdf.add_page()
 
 
         with pdf.table(text_align=("LEFT", "CENTER"), cell_fill_mode="ROWS", first_row_as_headings=False) as table:
+
+            
             for data_row in first_table:
                 row = table.row()
                 index = 0
                 for datum in data_row:
-                    pdf.set_font("times", "", 12)
                     if index == 0:
                         pdf.set_font("times", "B", 12)
                         index += 1
-
                     row.cell(datum)
-
+        
 
         pdf.ln(10)
         pdf.set_font("times", "", 12)
@@ -148,18 +150,23 @@ async def create_pdf(request: Request):
 
         style = FontFace(emphasis="BOLD", fill_color=grey)
 
+        # Define cell widths and heights for your table
+        cell_widths = [100, 100, 100]  # Adjust these as needed
+        cell_height = 10
+
+
         with pdf.table(text_align=("CENTER"), cell_fill_mode="ROWS", headings_style=style) as table:
             for data_row in second_table:
                 row = table.row()
                 for datum in data_row:
                     row.cell(datum)
 
-
         if pdf.will_page_break(15):
             pdf.add_page()
         
         
         pdf.set_font("times", "", 12)
+
         with pdf.table(text_align=("CENTER", "CENTER"), cell_fill_mode="NONE", first_row_as_headings=False, cell_fill_color=grey) as table:
             for data_row in third_table:
                 row = table.row()
@@ -184,6 +191,7 @@ async def create_pdf(request: Request):
         pdf.set_font("times", "", 12)
         # pdf.add_page()
         # pdf.ln(10)
+
         with pdf.table(text_align=("LEFT", "CENTER"), cell_fill_mode="ROWS", first_row_as_headings=False, line_height=3 * pdf.font_size) as table:
             for data_row in fourth_table:
                 row = table.row()
@@ -193,7 +201,8 @@ async def create_pdf(request: Request):
                     if index == 0:
                         pdf.set_font("times", "B", 12)
                         index += 1
-
+                    
+            
                     row.cell(datum)
 
 
@@ -242,8 +251,9 @@ async def create_pdf(request: Request):
 
         return {"status": 200}
         # return {"message": f"Email Sent to {data['employer_email']}"}
-    except Exception:
-        return {"status": 500}
+    except Exception as e:
+        traceback_message = traceback.format_exc()
+        return {"status": 500, "error": str(e), "trace": traceback_message}
         # return {"message": f"Email Sent to {data['user_email']}"}
 
 
