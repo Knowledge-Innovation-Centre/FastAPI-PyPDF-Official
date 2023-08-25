@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Path, Query, Request, BackgroundTasks
+from fastapi.encoders import jsonable_encoder
 from typing import Optional
 from pydantic import BaseModel
 
@@ -38,10 +39,10 @@ async def create_pdf(request: Request):
 
 
         # First Table
-        user_name_unicode = str(data["user_name"], "utf-8")
+        json_compatible = jsonable_encoder(data)
         first_table = (
             ("Organization:", data["organisation"]),
-            ("Name & Surname of Employee:", user_name_unicode),
+            ("Name & Surname of Employee:", json_compatible["user_name"]),
             ("Date & Time of Report:", data["date"])
         )
 
