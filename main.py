@@ -21,12 +21,17 @@ from fpdf.fonts import FontFace
 import environ
 
 import traceback
+from unidecode import unidecode
 
 
 app = FastAPI()
 
 env = environ.Env()
 environ.Env.read_env()
+
+
+def convert_to_ascii(text):
+    return unidecode(text)
 
 
 @app.get("/")
@@ -40,11 +45,13 @@ async def create_pdf(request: Request):
     try:
         data = await request.json()
 
+        user_name = convert_to_ascii(data["user_name"])
+
         # First Table
         first_table = (
             ("Organization:", data["organisation"]),
-            ("Username:", data["user_name"]),
-            # ("Name & Surname of Employee:", data["user_name"]),
+            # ("Username:", data["user_name"]),
+            ("Name & Surname of Employee:", user_name),
             ("Date & Time of Report:", data["date"])
         )
 
@@ -86,8 +93,8 @@ async def create_pdf(request: Request):
 
         # Fourth Table
         fourth_table = (
-            ("Username of the Employee", data["user_name"]),
-            # ("Name of the Employee", data["user_name"]),
+            # ("Username of the Employee", data["user_name"]),
+            ("Name of the Employee", user_name),
             ("Date", ""),
             ("Signature of Employee", "")
         )
@@ -231,7 +238,8 @@ async def create_pdf(request: Request):
         #########################
         in_memory_file = BytesIO(pdf.output())
         attach = MIMEApplication(in_memory_file.read(), _subtype="pdf")
-        custom_filename = f"Timesheets_Report_{data['user_name']}_{data['date']}"
+        # custom_filename = f"Timesheets_Report_{data['user_name']}_{data['date']}"
+        custom_filename = f"Timesheets_Report_{user_name}_{data['date']}"
         attach.add_header("Content-Disposition", "attachment", filename=str(custom_filename))
         msg.attach(attach)
 
