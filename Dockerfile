@@ -18,9 +18,6 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 # Copy the rest of the application code into the container
 COPY . .
 
-# Copy the .env file from the host system
-COPY /home/ubuntu/Ideanet/.env /app/.env
-
 # Expose port 8081 for the application
 EXPOSE 8081
 
